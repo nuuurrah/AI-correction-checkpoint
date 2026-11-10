@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pricing</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 40px 16px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f4f5f7;
+    color: #222;
+  }
+
+  .pricing-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .pricing {
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    box-shadow: 0 0 10px #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: left;
+  }
+
+  .pricing--featured { outline: 2px solid blue; }
+
+  .title {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .price {
+    margin: 0 0 16px;
+    font-size: 18px;
+    color: green;
+  }
+
+  .features {
+    list-style: none;
+    margin: 0 0 16px;
+    padding-left: 0;
+    flex-grow: 1;
+  }
+
+  .features li {
+    padding: 6px 4px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .features li:last-child { border-bottom: none; }
+
+  .btn {
+    width: 100%;
+    margin-top: auto;
+    padding: 10px 20px;
+    background: blue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .btn:hover,
+  .btn:focus-visible { background: darkblue; }
+</style>
+</head>
+<body>
+
+<div class="pricing-grid" id="pricing"></div>
+
+<script>
+  /**
+   * Card — builds one pricing card.
+   * @param {Object}   opts
+   * @param {string}   opts.title     Plan name
+   * @param {string}   opts.price     Price text, e.g. "$9.99"
+   * @param {string[]} opts.features  List of feature strings
+   * @param {string}  [opts.period="/month"]
+   * @param {string}  [opts.ctaLabel="Start Trial"]
+   * @param {boolean} [opts.featured=false]
+   * @param {Function}[opts.onSelect] Click handler for the button
+   * @returns {HTMLElement}
+   */
+  function Card({
+    title,
+    price,
+    features = [],
+    period = "/month",
+    ctaLabel = "Start Trial",
+    featured = false,
+    onSelect
+  }) {
+    const card = document.createElement("div");
+    card.className = "pricing" + (featured ? " pricing--featured" : "");
+
+    const h2 = document.createElement("h2");
+    h2.className = "title";
+    h2.textContent = title;          // textContent = safe from HTML injection
+
+    const p = document.createElement("p");
+    p.className = "price";
+    p.textContent = `${price} ${period}`;
+
+    const ul = document.createElement("ul");
+    ul.className = "features";
+    features.forEach(f => {
+      const li = document.createElement("li");
+      li.textContent = f;
+      ul.appendChild(li);
+    });
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn";
+    btn.textContent = ctaLabel;
+    if (onSelect) btn.addEventListener("click", () => onSelect(title));
+
+    card.append(h2, p, ul, btn);
+    return card;
+  }
+
+  // ---- Usage ----
+  const plans = [
+    { title: "Basic Plan", price: "$9.99",
+      features: ["1 GB Storage", "Basic Support", "All Core Features"] },
+    { title: "Pro Plan", price: "$19.99", featured: true,
+      features: ["10 GB Storage", "Priority Support", "All Core Features", "Team Sharing"] },
+    { title: "Enterprise", price: "$49.99", ctaLabel: "Contact Sales",
+      features: ["Unlimited Storage", "24/7 Support", "SSO & Audit Logs"] }
+  ];
+
+  const container = document.getElementById("pricing");
+  plans.forEach(plan =>
+    container.appendChild(Card({ ...plan, onSelect: name => console.log("Selected:", name) }))
+  );
+</script>
+
+</body>
+</html>
